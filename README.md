@@ -1,3 +1,3 @@
 - 👋 Hi, I’m @MohanadIbr.
-- 👀 I’m interested in Computer Science.
-- 🌱 I’m currently learning Computer Science!!. 
+- 👀 I’m interested in Software Engneering.
+- 🌱 I’m currently doing a Bachelor's degree in Software Engineering!!. 
