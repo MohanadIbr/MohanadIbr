@@ -1,46 +1,47 @@
 package com.MortgageCalcProj;
 
-public class MortgageCalculator {
-    public final byte MONTHS_IN_YEAR = 12;
-    public final byte PERCENT = 100;
+import java.text.NumberFormat;
+
+public class MortgageReport {
+    private final NumberFormat currency;
     private int principal;
     private double annualInterest;
     private byte years;
+    private MortgageCalculator calculator;
 
-    public MortgageCalculator(int principal,
-                              double annualInterest,
-                              byte years)
+    public MortgageReport(MortgageCalculator calculator){
+        this.calculator = calculator;
+        currency = NumberFormat.getCurrencyInstance();
+    }
+    public MortgageReport(int principal,
+                          double annualInterest,
+                          byte years)
     {
         this.principal = principal;
         this.annualInterest = annualInterest;
-        this.years = years;
+        this.years =years;
+        currency = NumberFormat.getCurrencyInstance();
     }
-    public double calculateBalance(short numberOfPaymentsMade) {
 
-        double balance = principal
-                * (Math.pow(1 + getMonthlyInterest(),getNumberOfPayments()) - Math.pow( 1 + getMonthlyInterest(),numberOfPaymentsMade))
-                / (Math.pow(1 + getMonthlyInterest(),getNumberOfPayments()) - 1 );
-        return balance;
+
+    public void printMortgage() {
+        calculator = new MortgageCalculator(principal,annualInterest,years);
+        double mortgage = calculator.calculateMortgage();
+        String mortgageFormat = currency.format(mortgage);
+        System.out.println("\nMORTGAGE\n________");
+        System.out.print("Monthly Payments: "+ mortgageFormat);
     }
-    public double[] getRemainingBalances(){
-        var balances = new double[getNumberOfPayments()];
-        for(short month = 1; month <= getNumberOfPayments(); month++) {
-            balances[month - 1] = calculateBalance(month);
+
+    public void printPaymentSchedule() {
+        System.out.println("\nPAYMENT SCHEDULE\n________________");
+        for(short month = 1; month <= getYears() * calculator.MONTHS_IN_YEAR; month++){
+            double balance = calculator.calculateBalance(month);
+            System.out.println(currency.format(balance));
+
         }
-        return balances;
-    }
-    private int getNumberOfPayments() {
-        return years * MONTHS_IN_YEAR;
     }
 
-    private float getMonthlyInterest() {
-        return (float) (annualInterest / PERCENT / MONTHS_IN_YEAR);
-    }
-
-    public double calculateMortgage()
-    {
-        double mortgage = principal * (getMonthlyInterest() * Math.pow(1+getMonthlyInterest(),getNumberOfPayments())
-                / (Math.pow(1+getMonthlyInterest(),getNumberOfPayments())-1));
-        return mortgage;
+    private double getYears() {
+        return years;
     }
 }
