@@ -1,17 +1,46 @@
 package com.MortgageCalcProj;
 
-public class Main {
+public class MortgageCalculator {
+    public final byte MONTHS_IN_YEAR = 12;
+    public final byte PERCENT = 100;
+    private int principal;
+    private double annualInterest;
+    private byte years;
 
-    static public MortgageReport report;
+    public MortgageCalculator(int principal,
+                              double annualInterest,
+                              byte years)
+    {
+        this.principal = principal;
+        this.annualInterest = annualInterest;
+        this.years = years;
+    }
+    public double calculateBalance(short numberOfPaymentsMade) {
 
-    public static void main(String[] args) {
-        int principal= (int) ReadFromConsole.readNumber("Principal: ",1000,1000000);
-        double annualInterest = ReadFromConsole.readNumber("Annual Interest Rate: ",1,30);
-        byte years = (byte) ReadFromConsole.readNumber("Period (Years): ",1,30);
-        report = new MortgageReport(principal,annualInterest,years);
-        report.printMortgage();
-        report.printPaymentSchedule();
-
+        double balance = principal
+                * (Math.pow(1 + getMonthlyInterest(),getNumberOfPayments()) - Math.pow( 1 + getMonthlyInterest(),numberOfPaymentsMade))
+                / (Math.pow(1 + getMonthlyInterest(),getNumberOfPayments()) - 1 );
+        return balance;
+    }
+    public double[] getRemainingBalances(){
+        var balances = new double[getNumberOfPayments()];
+        for(short month = 1; month <= getNumberOfPayments(); month++) {
+            balances[month - 1] = calculateBalance(month);
+        }
+        return balances;
+    }
+    private int getNumberOfPayments() {
+        return years * MONTHS_IN_YEAR;
     }
 
+    private float getMonthlyInterest() {
+        return (float) (annualInterest / PERCENT / MONTHS_IN_YEAR);
+    }
+
+    public double calculateMortgage()
+    {
+        double mortgage = principal * (getMonthlyInterest() * Math.pow(1+getMonthlyInterest(),getNumberOfPayments())
+                / (Math.pow(1+getMonthlyInterest(),getNumberOfPayments())-1));
+        return mortgage;
+    }
 }
